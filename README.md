@@ -32,7 +32,7 @@ The `FacebookPoster` API is minimal, which provides for easy use and effortless 
 	 *            the response that will be executed on completion or failure of
 	 *            the post
 	 */ 
-	post(String message, FacebookResponse)
+	public void post(String message, FacebookResponse)
 	
 	/**
 	 * Make an image post on Facebook on behalf of some user with the app that
@@ -46,7 +46,7 @@ The `FacebookPoster` API is minimal, which provides for easy use and effortless 
 	 *            the response that will be executed on completion or failure of
 	 *            the post
 	 */
-	post(String message, File image, FacebookResponse response)
+	public void post(String message, File image, FacebookResponse response)
 ```
 ## Notes
 1. This does not give full access to the Graph API. `FacebookPoster` only asks for the `publish_actions` permissions. Extending is easily done with the `RestFB` library.
