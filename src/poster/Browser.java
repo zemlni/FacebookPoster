@@ -52,7 +52,7 @@ public class Browser {
 	private void setup(String oauthRequestUrl) {
 		this.primaryStage = new Stage();
 		primaryStage.initModality(Modality.APPLICATION_MODAL);
-		ResourceFinder finder = new ResourceFinder();
+		ResourceFinder finder = new ResourceFinder("resources/FacebookPoster");
 		primaryStage.setTitle(finder.getResource("BrowserTitle"));
 		WebView myBrowser = new WebView();
 		WebEngine myWebEngine = myBrowser.getEngine();

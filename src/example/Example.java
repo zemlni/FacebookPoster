@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
 import poster.FacebookPoster;
 import poster.FacebookResponse;
+import poster.ResourceFinder;
 
 /**
  * @author Nikita Zemlevskiy naz7. This is an example use of the Facebook
@@ -22,19 +23,13 @@ import poster.FacebookResponse;
  *         Facebook user that has logged in.
  * 
  *         You will notice that there are hard coded values representing the app
- *         Id and app secret for the app I created. Please do not use these
+ *         Id and app secret for the app I created in the resource file. Please do not use these
  *         outside of this class. It is easy to create an app on Facebook. To
  *         enable it to post to user's walls please follow the instructions in
  *         the README that accompanies this util.
  */
-public class Main extends Application implements FacebookResponse {
-
-	/**
-	 * CHANGE THESE TO USE YOUR OWN APP
-	 */
-	private static final String APP_ID = "115239122361401";
-	private static final String SECRET_KEY = "5df23edcfec2a0ae080a1f5445e87728";
-
+public class Example extends Application implements FacebookResponse {
+	private ResourceFinder finder = new ResourceFinder("resources/Example");
 	private File image;
 
 	/**
@@ -46,7 +41,7 @@ public class Main extends Application implements FacebookResponse {
 	 */
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		FacebookPoster poster = new FacebookPoster(primaryStage, APP_ID, SECRET_KEY);
+		FacebookPoster poster = new FacebookPoster(finder.getResource("APP_ID"), finder.getResource("SECRET_KEY"));
 		primaryStage.setScene(setupScene(poster));
 		setupStage(primaryStage);
 	}

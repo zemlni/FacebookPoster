@@ -15,10 +15,7 @@ import com.restfb.FacebookClient;
 import com.restfb.Parameter;
 import com.restfb.Version;
 import com.restfb.WebRequestor;
-import com.restfb.types.FacebookType;
 import com.restfb.types.GraphResponse;
-
-import javafx.stage.Stage;
 
 /**
  * @author Nikita Zemlevskiy naz7 This is the class for the Facebook poster
@@ -41,35 +38,25 @@ public class FacebookPoster {
 	private Browser browser;
 	private Thread serverThread;
 	private String message, appId, secretKey;
-	private Stage stage;
 	private FacebookResponse response;
 	private InputStream image;
 	private String imageName;
-	private String code;
-	
-	public void setCode(String code){
-		this.code = code;
-	}
 
 	/**
 	 * Create a new Facebook Poster. The appId and secretKey can be found in
 	 * your app's dashboard.
 	 * 
-	 * @param stage
-	 *            the stage on which the browser will appear for the user to
-	 *            sign in on Facebook.
 	 * @param appId
 	 *            the app Id of the app that will be posting on the behalf of
 	 *            the user.
 	 * @param secretKey
 	 *            the app secret.
 	 */
-	public FacebookPoster(Stage stage, String appId, String secretKey) {
-		this.stage = stage;
+	public FacebookPoster(String appId, String secretKey) {
 		this.appId = appId;
 		this.secretKey = secretKey;
 	}
-//EAABozzLz3DkBAGwMV0RAjNNCI7V01Yqsrm43YLdjyq57FS5zQZCRVjwX3wdh9wDyXWIml0nAgQkPZAIiJLO0NP1Fr5wD32C7ZBrzYhRqKZC9ZAvYWKhvEybiUfeeJ0arlZAoCe0LUkuYYMIdmCW5aR9FDgzPCopTO4BwVovPicmgZDZD
+
 	/**
 	 * Make a message post on Facebook on behalf of some user with the app that
 	 * this FacebookPoster is initialized with.
@@ -101,7 +88,7 @@ public class FacebookPoster {
 	 */
 	public void post(String message, File image, FacebookResponse response) {
 		try {
-			if (image != null){
+			if (image != null) {
 				this.image = new FileInputStream(image);
 				this.imageName = image.getName();
 			}
@@ -152,7 +139,7 @@ public class FacebookPoster {
 		GraphResponse publishMessageResponse = image == null ? postMessage(facebookClient) : postImage(facebookClient);
 		serverThread.stop();
 		browser.close();
-		finish(true);	
+		finish(true);
 	}
 
 	/**
@@ -194,7 +181,8 @@ public class FacebookPoster {
 	 * @param condition
 	 *            whether the post was successful or not
 	 */
-	public void finish(boolean condition) {
-		response.doResponse(condition);
+	protected void finish(boolean condition) {
+		if (response != null)
+			response.doResponse(condition);
 	}
 }

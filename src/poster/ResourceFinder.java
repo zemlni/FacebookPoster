@@ -5,8 +5,8 @@ import java.util.ResourceBundle;
 public class ResourceFinder {
 	private ResourceBundle resources;
 
-	public ResourceFinder() {
-		resources = ResourceBundle.getBundle("resources/FacebookPoster");
+	public ResourceFinder(String path) {
+		resources = ResourceBundle.getBundle(path);
 	}
 
 	public String getResource(String name) {
