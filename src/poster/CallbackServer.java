@@ -34,8 +34,6 @@ public class CallbackServer{
 	 *            listening on this URL, in order to figure out the access code.
 	 */
 	public CallbackServer(FacebookPoster poster, String redirectURL) {
-		System.out.println("creating server " + poster);
-
 		try {
 			server = HttpServerImpl.create(new InetSocketAddress(8000), 0);
 		} catch (IOException e) {

@@ -9,8 +9,6 @@ public class CallbackServerWrapper implements Runnable{
 	}
 	@Override
 	public void run() {
-		System.out.println("creating server wrapper " + poster);
-
 		CallbackServer server = new CallbackServer(poster, redirectURL);
 	}
 	

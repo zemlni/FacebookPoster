@@ -85,16 +85,6 @@ public class FacebookPoster {
 		this.response = response;
 		browser = new Browser(OAUTH_REQUEST_URL + appId + "&redirect_uri=" + REDIRECT_URL + "&scope=publish_actions");
 		startServer();
-		/*synchronized(this){
-			while (code == null)
-				try {
-					wait();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			finishPost(code);
-		}*/
 	}
 
 	/**
@@ -158,11 +148,8 @@ public class FacebookPoster {
 	 *            the user code.
 	 */
 	protected void finishPost(String code) {
-		System.out.println("FINISH POST");
 		FacebookClient facebookClient = new DefaultFacebookClient(getFacebookUserToken(code), Version.LATEST);
-		System.out.println("FINISHED POST");
 		GraphResponse publishMessageResponse = image == null ? postMessage(facebookClient) : postImage(facebookClient);
-		System.out.println("ACTUALLY FINISHED");
 		serverThread.stop();
 		browser.close();
 		finish(true);	
@@ -175,8 +162,6 @@ public class FacebookPoster {
 	private void startServer() {
 		serverThread = new Thread(new CallbackServerWrapper(this, REDIRECT_URL));
 		serverThread.start();
-		System.out.println("STARTED SERVER");
-		//server = new CallbackServer(this, REDIRECT_URL);
 	}
 
 	/**
@@ -199,7 +184,6 @@ public class FacebookPoster {
 			finish(false);
 		}
 		JsonObject jsonObject = new JsonParser().parse(accessTokenResponse.getBody()).getAsJsonObject();
-		System.out.println(jsonObject.get("access_token").getAsString());
 		return jsonObject.get("access_token").getAsString();
 	}
 

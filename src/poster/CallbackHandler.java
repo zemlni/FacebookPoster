@@ -27,7 +27,6 @@ public class CallbackHandler implements HttpHandler {
 	 */
 	public CallbackHandler(FacebookPoster poster) {
 		this.poster = poster;
-		System.out.println("initialized callback handler. " + this.poster);
 	}
 
 	/**
@@ -41,21 +40,15 @@ public class CallbackHandler implements HttpHandler {
 	 */
 	@Override
 	public void handle(HttpExchange t) throws IOException {
-		System.out.println("REQUEST: " + t.getRequestURI().toString());
 		if (code == null) {
 			code = t.getRequestURI().toString().split("code=")[1];
 			t.close();
-			System.out.println("TELL POSTER TO FINISH");
 			Platform.runLater(new Runnable() {
 				@Override
 				public void run() {
-					System.out.println(poster);
 					poster.finishPost(code);
-					System.out.println("told poster to finish");
 				}
 			});
-			// poster.setCode(code);
-			// poster.notifyAll();
 		}
 	}
 }
