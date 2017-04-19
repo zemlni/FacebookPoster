@@ -141,7 +141,7 @@ public class Main extends Application implements FacebookResponse {
 	public void doResponse(boolean condition) {
 		Alert alert = new Alert(AlertType.INFORMATION,
 				condition ? "Facebook post succeeded!" : "Facebook post failed!");
-		alert.setOnCloseRequest(e -> System.exit(0));
+		alert.setOnHidden(e -> System.exit(0));
 		alert.show();
 	}
 }
