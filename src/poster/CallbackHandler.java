@@ -5,14 +5,17 @@ import java.io.IOException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import javafx.application.Platform;
+
 /**
  * @author Nikita Zemlevskiy naz7 This class handles the callback from Facebook.
  *         Facebook redirects the user to the URL provided in the oauth request,
  *         and this handler is set up to handle that redirect and fetch the
- *         access code given in the body of the request.
+ *         access code given in the URI of the request.
  */
 public class CallbackHandler implements HttpHandler {
 	private FacebookPoster poster;
+	private String code;
 
 	/**
 	 * Create a new CallbackHandler.
@@ -24,11 +27,12 @@ public class CallbackHandler implements HttpHandler {
 	 */
 	public CallbackHandler(FacebookPoster poster) {
 		this.poster = poster;
+		System.out.println("initialized callback handler. " + this.poster);
 	}
 
 	/**
 	 * Handle an HttpExchange received by the server. Here the code is fetched
-	 * from the body of the request.
+	 * from the URI of the request.
 	 * 
 	 * @param t
 	 *            the exchange that has been received by the server
@@ -37,9 +41,21 @@ public class CallbackHandler implements HttpHandler {
 	 */
 	@Override
 	public void handle(HttpExchange t) throws IOException {
-		System.out.println(t.getRequestURI().toString());
-		String code = t.getRequestURI().toString().split("code=")[1];
-		t.close();
-		poster.finishPost(code);
+		System.out.println("REQUEST: " + t.getRequestURI().toString());
+		if (code == null) {
+			code = t.getRequestURI().toString().split("code=")[1];
+			t.close();
+			System.out.println("TELL POSTER TO FINISH");
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					System.out.println(poster);
+					poster.finishPost(code);
+					System.out.println("told poster to finish");
+				}
+			});
+			// poster.setCode(code);
+			// poster.notifyAll();
+		}
 	}
 }

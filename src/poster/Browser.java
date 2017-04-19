@@ -56,7 +56,7 @@ public class Browser {
 		primaryStage.setTitle(finder.getResource("BrowserTitle"));
 		WebView myBrowser = new WebView();
 		WebEngine myWebEngine = myBrowser.getEngine();
-		myWebEngine.locationProperty().addListener(e -> System.out.println(myWebEngine.getLocation()));
+		//myWebEngine.locationProperty().addListener(e -> System.out.println(myWebEngine.getLocation()));
 		myWebEngine.load(oauthRequestUrl);
 		StackPane root = new StackPane();
 		root.getChildren().add(myBrowser);

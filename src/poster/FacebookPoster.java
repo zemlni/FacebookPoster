@@ -39,12 +39,17 @@ public class FacebookPoster {
 	private static final String REDIRECT_URL = "http://127.0.0.1:8000/test";
 	private static final String OAUTH_REQUEST_URL = "https://www.facebook.com/v2.9/dialog/oauth?client_id=";
 	private Browser browser;
-	private CallbackServer server;
+	private Thread serverThread;
 	private String message, appId, secretKey;
 	private Stage stage;
 	private FacebookResponse response;
 	private InputStream image;
 	private String imageName;
+	private String code;
+	
+	public void setCode(String code){
+		this.code = code;
+	}
 
 	/**
 	 * Create a new Facebook Poster. The appId and secretKey can be found in
@@ -64,7 +69,7 @@ public class FacebookPoster {
 		this.appId = appId;
 		this.secretKey = secretKey;
 	}
-
+//EAABozzLz3DkBAGwMV0RAjNNCI7V01Yqsrm43YLdjyq57FS5zQZCRVjwX3wdh9wDyXWIml0nAgQkPZAIiJLO0NP1Fr5wD32C7ZBrzYhRqKZC9ZAvYWKhvEybiUfeeJ0arlZAoCe0LUkuYYMIdmCW5aR9FDgzPCopTO4BwVovPicmgZDZD
 	/**
 	 * Make a message post on Facebook on behalf of some user with the app that
 	 * this FacebookPoster is initialized with.
@@ -80,6 +85,16 @@ public class FacebookPoster {
 		this.response = response;
 		browser = new Browser(OAUTH_REQUEST_URL + appId + "&redirect_uri=" + REDIRECT_URL + "&scope=publish_actions");
 		startServer();
+		/*synchronized(this){
+			while (code == null)
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			finishPost(code);
+		}*/
 	}
 
 	/**
@@ -96,11 +111,13 @@ public class FacebookPoster {
 	 */
 	public void post(String message, File image, FacebookResponse response) {
 		try {
-			this.image = new FileInputStream(image);
+			if (image != null){
+				this.image = new FileInputStream(image);
+				this.imageName = image.getName();
+			}
 		} catch (FileNotFoundException e) {
 			finish(false);
 		}
-		this.imageName = image.getName();
 		post(message, response);
 	}
 
@@ -141,11 +158,14 @@ public class FacebookPoster {
 	 *            the user code.
 	 */
 	protected void finishPost(String code) {
+		System.out.println("FINISH POST");
 		FacebookClient facebookClient = new DefaultFacebookClient(getFacebookUserToken(code), Version.LATEST);
+		System.out.println("FINISHED POST");
 		GraphResponse publishMessageResponse = image == null ? postMessage(facebookClient) : postImage(facebookClient);
-		server.stop();
+		System.out.println("ACTUALLY FINISHED");
+		serverThread.stop();
 		browser.close();
-		finish(true);
+		finish(true);	
 	}
 
 	/**
@@ -153,7 +173,10 @@ public class FacebookPoster {
 	 * to get the user access code.
 	 */
 	private void startServer() {
-		server = new CallbackServer(this, REDIRECT_URL);
+		serverThread = new Thread(new CallbackServerWrapper(this, REDIRECT_URL));
+		serverThread.start();
+		System.out.println("STARTED SERVER");
+		//server = new CallbackServer(this, REDIRECT_URL);
 	}
 
 	/**
@@ -174,9 +197,9 @@ public class FacebookPoster {
 					+ "&redirect_uri=" + REDIRECT_URL + "&client_secret=" + secretKey + "&code=" + code);
 		} catch (IOException e) {
 			finish(false);
-			e.printStackTrace();
 		}
 		JsonObject jsonObject = new JsonParser().parse(accessTokenResponse.getBody()).getAsJsonObject();
+		System.out.println(jsonObject.get("access_token").getAsString());
 		return jsonObject.get("access_token").getAsString();
 	}
 
