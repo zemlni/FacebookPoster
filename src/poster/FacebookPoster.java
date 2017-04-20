@@ -17,6 +17,8 @@ import com.restfb.Version;
 import com.restfb.WebRequestor;
 import com.restfb.types.GraphResponse;
 
+import javafx.application.Platform;
+
 /**
  * @author Nikita Zemlevskiy naz7 This is the class for the Facebook poster
  *         util. This class is the one that actually carries out the posting.
@@ -41,6 +43,7 @@ public class FacebookPoster {
 	private FacebookResponse response;
 	private InputStream image;
 	private String imageName;
+	private String code;
 
 	/**
 	 * Create a new Facebook Poster. The appId and secretKey can be found in
@@ -70,8 +73,12 @@ public class FacebookPoster {
 	public void post(String message, FacebookResponse response) {
 		this.message = message;
 		this.response = response;
-		browser = new Browser(OAUTH_REQUEST_URL + appId + "&redirect_uri=" + REDIRECT_URL + "&scope=publish_actions");
-		startServer();
+		if (code == null) {
+			browser = new Browser(
+					OAUTH_REQUEST_URL + appId + "&redirect_uri=" + REDIRECT_URL + "&scope=publish_actions", this);
+			startServer();
+		} else
+			finishPost(code);
 	}
 
 	/**
@@ -135,10 +142,15 @@ public class FacebookPoster {
 	 *            the user code.
 	 */
 	protected void finishPost(String code) {
-		FacebookClient facebookClient = new DefaultFacebookClient(getFacebookUserToken(code), Version.LATEST);
-		GraphResponse publishMessageResponse = image == null ? postMessage(facebookClient) : postImage(facebookClient);
-		serverThread.stop();
-		browser.close();
+		this.code = code;
+		try {
+			FacebookClient facebookClient = new DefaultFacebookClient(getFacebookUserToken(code), Version.LATEST);
+			GraphResponse publishMessageResponse = image == null ? postMessage(facebookClient)
+					: postImage(facebookClient);
+		} catch (Exception e) {
+			finish(false);
+			return;
+		}
 		finish(true);
 	}
 
@@ -182,7 +194,14 @@ public class FacebookPoster {
 	 *            whether the post was successful or not
 	 */
 	protected void finish(boolean condition) {
-		if (response != null)
-			response.doResponse(condition);
+		serverThread.stop();
+		browser.close();
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				if (response != null)
+					response.doResponse(condition);
+			}
+		});
 	}
 }
