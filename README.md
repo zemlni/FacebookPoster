@@ -50,6 +50,7 @@ The `FacebookPoster` API is minimal, which provides for easy use and effortless 
 ```
 ## Notes
 1. This does not give full access to the Graph API. `FacebookPoster` only asks for the `publish_actions` permissions. Extending is easily done with the `RestFB` library.
+2. At the moment, the app will only allow you to post if you are listed as a developer for the facebook app as my app has not yet been approved. If you want to be added as a developer for the sake of testing your feature with my app please email me at nikita.zemlevskiy@duke.edu. But you should make your own app to have greater control.
 
 ## Instructions to get a Facebook app set up.
 1. Make a new Facebook App.
